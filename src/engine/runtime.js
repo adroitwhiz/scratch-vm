@@ -1659,7 +1659,7 @@ class Runtime extends EventEmitter {
     isActiveThread (thread) {
         return (
             (
-                thread.stack.length > 0 &&
+                thread.stackFrame !== null &&
                 thread.status !== Thread.STATUS_DONE) &&
             this.threads.indexOf(thread) > -1);
     }
@@ -1837,6 +1837,9 @@ class Runtime extends EventEmitter {
             // Start the thread with this top block.
             newThreads.push(this._pushThread(topBlockId, target));
         }, optTarget);
+
+        // TODO: Move the execute call to sequencer. Maybe in a method call
+        // stepHat or stepOne.
         newThreads.forEach(thread => {
             // Store hat block fields that must match on the thread, so they can be accessed at any time, even after
             // e.g. we've waited on a promise from an asynchronous reporter. When the hat block's inputs are interpreted
@@ -1847,8 +1850,11 @@ class Runtime extends EventEmitter {
             // For compatibility with Scratch 2, edge triggered hats need to be processed before
             // threads are stepped. See ScratchRuntime.as for original implementation
             const topBlock = thread.blockContainer.getBlock(thread.topBlock);
-            if (this.getIsEdgeActivatedHat(topBlock.opcode)) {
+            if (this.getIsEdgeActivatedHat(topBlock.opcode) && thread.status !== Thread.STATUS_DONE) {
                 thread.goToNextBlock();
+                if (thread.stackFrame === null) {
+                    this.sequencer.retireThread(thread);
+                }
             }
         });
         return newThreads;
