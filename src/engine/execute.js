@@ -350,7 +350,7 @@ class BlockCached {
 
         // The final operation is this block itself. At the top most block is a
         // command block or a block that is being run as a monitor.
-        if (typeof this._blockFunction !== 'undefined') {
+        if (typeof this._blockFunction === 'function') {
             this._ops.push(this);
         }
     }
