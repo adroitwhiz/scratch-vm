@@ -7,7 +7,6 @@ const BlocksRuntimeCache = require('./blocks-runtime-cache');
 const BlockType = require('../extension-support/block-type');
 const Profiler = require('./profiler');
 const Sequencer = require('./sequencer');
-const execute = require('./execute.js');
 const ScratchBlocksConstants = require('./scratch-blocks-constants');
 const TargetType = require('../extension-support/target-type');
 const Thread = require('./thread');
@@ -1835,20 +1834,7 @@ class Runtime extends EventEmitter {
             // Start the thread with this top block.
             newThreads.push(this._pushThread(topBlockId, target));
         }, optTarget);
-        newThreads.forEach(thread => {
-            // Store hat block fields that must match on the thread, so they can be accessed at any time, even after
-            // e.g. we've waited on a promise from an asynchronous reporter. When the hat block's inputs are interpreted
-            // they will be compared to these values.
-            if (optMatchFields) thread.hatMatchArgs = optMatchFields;
-            execute(this.sequencer, thread);
-
-            // For compatibility with Scratch 2, edge triggered hats need to be processed before
-            // threads are stepped. See ScratchRuntime.as for original implementation
-            const topBlock = thread.blockContainer.getBlock(thread.topBlock);
-            if (this.getIsEdgeActivatedHat(topBlock.opcode)) {
-                thread.goToNextBlock();
-            }
-        });
+        newThreads.forEach(thread => this.sequencer.stepHat(thread));
         return newThreads;
     }
 
