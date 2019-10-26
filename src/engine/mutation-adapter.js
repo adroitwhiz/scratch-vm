@@ -1,5 +1,5 @@
-const html = require('htmlparser2');
 const decodeHtml = require('decode-html');
+const log = require('../util/log');
 
 /**
  * Convert a part of a mutation DOM to a mutation VM object, recursively.
@@ -8,11 +8,12 @@ const decodeHtml = require('decode-html');
  */
 const mutatorTagToObject = function (dom) {
     const obj = Object.create(null);
-    obj.tagName = dom.name;
+    obj.tagName = dom.tagName;
     obj.children = [];
-    for (const prop in dom.attribs) {
+    for (const attribute of dom.attributes) {
+        const prop = attribute.nodeName;
         if (prop === 'xmlns') continue;
-        obj[prop] = decodeHtml(dom.attribs[prop]);
+        obj[prop] = decodeHtml(attribute.nodeValue);
         // Note: the capitalization of block info in the following lines is important.
         // The lowercase is read in from xml which normalizes case. The VM uses camel case everywhere else.
         if (prop === 'blockinfo') {
@@ -20,9 +21,9 @@ const mutatorTagToObject = function (dom) {
             delete obj.blockinfo;
         }
     }
-    for (let i = 0; i < dom.children.length; i++) {
+    for (let i = 0; i < dom.childNodes.length; i++) {
         obj.children.push(
-            mutatorTagToObject(dom.children[i])
+            mutatorTagToObject(dom.childNodes[i])
         );
     }
     return obj;
@@ -34,15 +35,16 @@ const mutatorTagToObject = function (dom) {
  * @param {(object|string)} mutation Mutation XML string or DOM.
  * @return {object} Object representing the mutation.
  */
-const mutationAdpater = function (mutation) {
+const mutationAdapter = function (mutation) {
     let mutationParsed;
     // Check if the mutation is already parsed; if not, parse it.
     if (typeof mutation === 'object') {
         mutationParsed = mutation;
     } else {
-        mutationParsed = html.parseDOM(mutation)[0];
+        log.warn('Mutations from text are deprecated');
+        mutationParsed = new DOMParser().parseFromString(mutation, 'text/xml').documentElement;
     }
     return mutatorTagToObject(mutationParsed);
 };
 
-module.exports = mutationAdpater;
+module.exports = mutationAdapter;
