@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.2 (67145) - http://www.bohemiancoding.com/sketch -->
+    <title>Extensions/Software/Video-Sensing-Menu</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Extensions/Software/Video-Sensing-Menu" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="video-motion" transform="translate(0.000000, 5.000000)" fill-rule="nonzero">
+            <circle id="Oval-Copy" fill="#0EBD8C" opacity="0.25" cx="16" cy="8" r="2"></circle>
+            <circle id="Oval-Copy" fill="#0EBD8C" opacity="0.5" cx="16" cy="6" r="2"></circle>
+            <circle id="Oval-Copy" fill="#0EBD8C" opacity="0.75" cx="16" cy="4" r="2"></circle>
+            <circle id="Oval" fill="#0EBD8C" cx="16" cy="2" r="2"></circle>
+            <path d="M11.3359739,2.20978825 L8.25,4.20995649 L8.25,3.05 C8.25,2.04488227 7.46859031,1.25 6.5,1.25 L2.05,1.25 C1.03807119,1.25 0.25,2.03807119 0.25,3.05 L0.25,7 C0.25,7.96369937 1.04224919,8.75594856 2.05,8.8 L6.5,8.8 C7.45083009,8.8 8.25,7.9732725 8.25,7 L8.25,5.85845241 L8.62862394,6.08562677 L11.4267767,7.7732233 C11.4368943,7.78334091 11.4757655,7.8 11.5,7.8 C11.6334932,7.8 11.75,7.69126034 11.75,7.55 L11.75,2.4 C11.75,2.41838269 11.7219029,2.35282282 11.6856268,2.27862394 C11.6129528,2.15750069 11.4707968,2.1290695 11.3359739,2.20978825 Z" id="video_37_" stroke-opacity="0.15" stroke="#000000" stroke-width="0.5" fill="#4D4D4D"></path>
+        </g>
+    </g>
+</svg>

@@ -27,6 +27,24 @@ const base = {
         {
             test: /\.mp3$/,
             loader: 'file-loader'
+        },
+        {
+            test: /\.png$/i,
+            use: [
+                'url-loader',
+                {
+                    loader: 'image-webpack-loader'
+                }
+            ]
+        },
+        {
+            test: /\.svg$/i,
+            use: [
+                'svg-url-loader',
+                {
+                    loader: 'image-webpack-loader'
+                }
+            ]
         }]
     },
     optimization: {

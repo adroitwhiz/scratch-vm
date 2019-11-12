@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.2 (67145) - http://www.bohemiancoding.com/sketch -->
+    <title>Extensions/Software/Text-to-Speech-Menu</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Extensions/Software/Text-to-Speech-Menu" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="text2speech" transform="translate(2.000000, 2.000000)" fill-rule="nonzero">
+            <path d="M5.75,8.83467173 C5.75,8.32696344 5.00300727,8.04221371 4.55628012,8.44414999 L3.20628012,9.52535702 C2.69673378,9.93344968 2.03748675,10.1658788 1.35,10.1658788 L1.15,10.1658788 C0.632596165,10.1658788 0.25,10.5106002 0.25,10.9520355 L0.25,13.0693993 C0.25,13.5108346 0.632596165,13.855556 1.15,13.855556 L1.35,13.855556 C2.07877841,13.855556 2.72686161,14.0667636 3.25986049,14.499 L4.55920147,15.5796608 C5.01309276,15.9545396 5.75,15.6736344 5.75,15.1417128 L5.75,8.83467173 Z" id="speaker" stroke-opacity="0.15" stroke="#000000" stroke-width="0.5" fill="#4D4D4D"></path>
+            <path d="M10.7048313,8 C9.79067468,9.13114847 8.3066184,9.71428571 7.83333333,9.71428571 C7.83333333,9.71428571 7.5,9.71428571 7.5,9.38095238 C7.5,9.08522684 8.06220168,8.90194164 8.18906067,7.56754058 C6.88996991,6.90679005 6,5.55732683 6,4 C6,1.790861 7.790861,4.05812251e-16 10,0 L12,0 C14.209139,-4.05812251e-16 16,1.790861 16,4 C16,6.209139 14.209139,8 12,8 L10.7048313,8 Z" id="speech" fill="#0EBD8C"></path>
+        </g>
+    </g>
+</svg>
