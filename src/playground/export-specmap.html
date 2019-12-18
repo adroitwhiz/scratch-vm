@@ -1,0 +1,41 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Scratch VM Playground</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: sans-serif;
+        }
+        .log-entry {
+            border-bottom-width: 1px;
+            border-bottom-style: solid;
+            padding: 0.25em;
+        }
+        .log-entry.info {
+            color: #059;
+            border-bottom-color: #246;
+            background-color: #cdf;
+        }
+        .log-entry.warn {
+            color: #964;
+            border-bottom-color: #b86;
+            background-color: #fda;
+        }
+        .log-entry.error {
+            color: #802;
+            border-bottom-color: #a24;
+            background-color: #fcd;
+        }
+    </style>
+</head>
+<body>
+    <div id="blocks"></div>
+    <div id="log"></div>
+
+    <!-- Playground -->
+    <script src="./export-specmap.js"></script>
+</body>
+</html>
