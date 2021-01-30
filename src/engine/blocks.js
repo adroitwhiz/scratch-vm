@@ -39,30 +39,6 @@ class Blocks {
         this._scripts = [];
 
         /**
-         * Runtime Cache
-         * @type {{inputs: {}, procedureParamNames: {}, procedureDefinitions: {}}}
-         * @private
-         */
-        Object.defineProperty(this, '_cache', {writable: true, enumerable: false});
-        this._cache = {
-            /**
-             * Cache block inputs by block id
-             * @type {object.<string, !Array.<object>>}
-             */
-            inputs: {},
-            /**
-             * Cache procedure Param Names by block id
-             * @type {object.<string, ?Array.<string>>}
-             */
-            procedureParamNames: {},
-            /**
-             * Cache procedure definitions by block id
-             * @type {object.<string, ?string>}
-             */
-            procedureDefinitions: {}
-        };
-
-        /**
          * Flag which indicates that blocks in this container should not glow.
          * Blocks will still glow when clicked on, but this flag is used to control
          * whether the blocks in this container can request a glow as part of
@@ -156,12 +132,8 @@ class Blocks {
      */
     getInputs (block) {
         if (typeof block === 'undefined') return null;
-        let inputs = this._cache.inputs[block.id];
-        if (typeof inputs !== 'undefined') {
-            return inputs;
-        }
 
-        inputs = {};
+        const inputs = {};
         for (const input in block.inputs) {
             // Ignore blocks prefixed with branch prefix.
             if (input.substring(0, Blocks.BRANCH_INPUT_PREFIX.length) !==
@@ -170,7 +142,6 @@ class Blocks {
             }
         }
 
-        this._cache.inputs[block.id] = inputs;
         return inputs;
     }
 
@@ -203,24 +174,17 @@ class Blocks {
      * @return {?string} ID of procedure definition.
      */
     getProcedureDefinition (name) {
-        const blockID = this._cache.procedureDefinitions[name];
-        if (typeof blockID !== 'undefined') {
-            return blockID;
-        }
-
         for (const id in this._blocks) {
             if (!this._blocks.hasOwnProperty(id)) continue;
             const block = this._blocks[id];
             if (block.opcode === 'procedures_definition') {
                 const internal = this._getCustomBlockInternal(block);
                 if (internal && internal.mutation.proccode === name) {
-                    this._cache.procedureDefinitions[name] = id; // The outer define block id
                     return id;
                 }
             }
         }
 
-        this._cache.procedureDefinitions[name] = null;
         return null;
     }
 
@@ -239,11 +203,6 @@ class Blocks {
      * @return {?Array.<string>} List of param names for a procedure.
      */
     getProcedureParamNamesIdsAndDefaults (name) {
-        const cachedNames = this._cache.procedureParamNames[name];
-        if (typeof cachedNames !== 'undefined') {
-            return cachedNames;
-        }
-
         for (const id in this._blocks) {
             if (!this._blocks.hasOwnProperty(id)) continue;
             const block = this._blocks[id];
@@ -253,12 +212,10 @@ class Blocks {
                 const ids = JSON.parse(block.mutation.argumentids);
                 const defaults = JSON.parse(block.mutation.argumentdefaults);
 
-                this._cache.procedureParamNames[name] = [names, ids, defaults];
-                return this._cache.procedureParamNames[name];
+                return [names, ids, defaults];
             }
         }
 
-        this._cache.procedureParamNames[name] = null;
         return null;
     }
 
@@ -486,15 +443,6 @@ class Blocks {
     // ---------------------------------------------------------------------
 
     /**
-     * Reset all runtime caches.
-     */
-    resetCache () {
-        this._cache.inputs = {};
-        this._cache.procedureParamNames = {};
-        this._cache.procedureDefinitions = {};
-    }
-
-    /**
      * Emit a project changed event if this is a block container
      * that can affect the project state.
      */
@@ -522,8 +470,6 @@ class Blocks {
         if (block.topLevel) {
             this._addScript(block.id);
         }
-
-        this.resetCache();
 
         // A new block was actually added to the block container,
         // emit a project changed event
@@ -658,8 +604,6 @@ class Blocks {
         }
 
         this.emitProjectChanged();
-
-        this.resetCache();
     }
 
     /**
@@ -733,7 +677,6 @@ class Blocks {
             this._blocks[e.id].parent = e.newParent;
             didChange = true;
         }
-        this.resetCache();
 
         if (didChange) this.emitProjectChanged();
     }
@@ -791,7 +734,6 @@ class Blocks {
         // Delete block itself.
         delete this._blocks[blockId];
 
-        this.resetCache();
         this.emitProjectChanged();
     }
 
@@ -933,7 +875,6 @@ class Blocks {
                 }
             }
         }
-        if (blockUpdated) this.resetCache();
         return blockUpdated;
     }
 
