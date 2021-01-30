@@ -50,7 +50,7 @@ const isPromise = function (value) {
  */
 // @todo move this to callback attached to the thread when we have performance
 // metrics (dd)
-const handleReport = function (resolvedValue, sequencer, thread, blockCached, lastOperation) {
+const handleReport = function (resolvedValue, sequencer, thread, blockCached) {
     const currentBlockId = blockCached.id;
     const opcode = blockCached.opcode;
     const isHat = blockCached._isHat;
@@ -82,7 +82,7 @@ const handleReport = function (resolvedValue, sequencer, thread, blockCached, la
     } else {
         // In a non-hat, report the value visually if necessary if
         // at the top of the thread stack.
-        if (lastOperation && typeof resolvedValue !== 'undefined' && thread.atStackTop()) {
+        if (typeof resolvedValue !== 'undefined' && thread.atStackTop()) {
             if (thread.stackClick) {
                 sequencer.runtime.visualReport(currentBlockId, resolvedValue);
             }
@@ -111,7 +111,7 @@ const handlePromise = (primitiveReportedValue, sequencer, thread, blockCached, l
     }
     // Promise handlers
     primitiveReportedValue.then(resolvedValue => {
-        handleReport(resolvedValue, sequencer, thread, blockCached, lastOperation);
+        handleReport(resolvedValue, sequencer, thread, blockCached);
         // If its a command block.
         if (lastOperation && typeof resolvedValue === 'undefined') {
             let stackFrame;
@@ -490,7 +490,7 @@ const execute = function (sequencer, thread) {
     const start = i;
 
     for (; i < length; i++) {
-        const lastOperation = i === length - 1;
+        const last = i === length - 1;
         const opCached = ops[i];
 
         const blockFunction = opCached._blockFunction;
@@ -514,7 +514,7 @@ const execute = function (sequencer, thread) {
 
         // If it's a promise, wait until promise resolves.
         if (isPromise(primitiveReportedValue)) {
-            handlePromise(primitiveReportedValue, sequencer, thread, opCached, lastOperation);
+            handlePromise(primitiveReportedValue, sequencer, thread, opCached, last);
 
             // Store the already reported values. They will be thawed into the
             // future versions of the same operations by block id. The reporting
@@ -542,8 +542,15 @@ const execute = function (sequencer, thread) {
             // and continue them later after thawing the reported values.
             break;
         } else if (thread.status === Thread.STATUS_RUNNING) {
-            if (lastOperation) {
-                handleReport(primitiveReportedValue, sequencer, thread, opCached, lastOperation);
+            if (last) {
+                if (typeof primitiveReportedValue === 'undefined') {
+                    // No value reported - potentially a command block.
+                    // Edge-activated hats don't request a glow; all
+                    // commands do.
+                    thread.requestScriptGlowInFrame = true;
+                }
+
+                handleReport(primitiveReportedValue, sequencer, thread, opCached);
             } else {
                 // By definition a block that is not last in the list has a
                 // parent.
