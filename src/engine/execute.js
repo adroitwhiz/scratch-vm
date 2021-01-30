@@ -250,6 +250,10 @@ const execute = function (sequencer, thread, recursiveCall) {
             // Actually execute the block.
             execute(sequencer, thread, RECURSIVE);
             if (thread.status === Thread.STATUS_PROMISE_WAIT) {
+                // Waiting for the block to resolve, store the current argValues
+                // onto a member of the currentStackFrame that can be used once
+                // the nested block resolves to rebuild argValues up to this
+                // point.
                 for (const _inputName in inputs) {
                     if (_inputName === inputName) break;
                     if (_inputName === 'BROADCAST_INPUT') {
@@ -274,11 +278,12 @@ const execute = function (sequencer, thread, recursiveCall) {
         } else if (currentStackFrame.waitingReporter === inputName) {
             inputValue = currentStackFrame.justReported;
             currentStackFrame.waitingReporter = null;
-            // If we've gotten this far, all of the input blocks are evaluated,
-            // and `argValues` is fully populated. So, execute the block
-            // primitive. First, clear `currentStackFrame.reported`, so any
-            // subsequent execution (e.g., on return from a branch) gets fresh
-            // inputs.
+            currentStackFrame.justReported = null;
+            // We have rebuilt argValues with all the stored values in the
+            // currentStackFrame from the nested block's promise resolving.
+            // Using the reported value from the block we waited on, reset the
+            // storage member of currentStackFrame so the next execute call at
+            // this level can use it in a clean state.
             currentStackFrame.reported = {};
         } else if (typeof currentStackFrame.reported[inputName] !== 'undefined') {
             inputValue = currentStackFrame.reported[inputName];
