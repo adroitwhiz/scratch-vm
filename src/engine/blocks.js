@@ -1216,22 +1216,21 @@ class Blocks {
  * @param {string} blockId blockId for the desired execute cache
  * @return {object} execute cache object
  */
-BlocksExecuteCache.getCached = function (blocks, blockId, CacheType = Object) {
+BlocksExecuteCache.getCached = function (blocks, blockId) {
+    const block = blocks.getBlock(blockId);
+    if (typeof block === 'undefined') return null;
     let cached = blocks._cache._executeCached[blockId];
     if (typeof cached !== 'undefined') {
         return cached;
     }
 
-    const block = blocks.getBlock(blockId);
-    if (typeof block === 'undefined') return null;
-
-    cached = new CacheType({
+    cached = {
         _initialized: false,
         opcode: blocks.getOpcode(block),
         fields: blocks.getFields(block),
         inputs: blocks.getInputs(block),
         mutation: blocks.getMutation(block)
-    });
+    };
     blocks._cache._executeCached[blockId] = cached;
     return cached;
 };
