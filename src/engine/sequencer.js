@@ -121,11 +121,12 @@ class Sequencer {
                         if (stepThreadProfilerId === -1) {
                             stepThreadProfilerId = this.runtime.profiler.idByName(stepThreadProfilerFrame);
                         }
-
-                        // Increment the number of times stepThread is called.
-                        this.runtime.profiler.increment(stepThreadProfilerId);
+                        this.runtime.profiler.start(stepThreadProfilerId);
                     }
                     this.stepThread(activeThread);
+                    if (this.runtime.profiler !== null) {
+                        this.runtime.profiler.stop();
+                    }
                     activeThread.warpTimer = null;
                     if (activeThread.isKilled) {
                         i--; // if the thread is removed from the list (killed), do not increase index
@@ -202,14 +203,22 @@ class Sequencer {
                 if (executeProfilerId === -1) {
                     executeProfilerId = this.runtime.profiler.idByName(executeProfilerFrame);
                 }
-
-                // Increment the number of times execute is called.
-                this.runtime.profiler.increment(executeProfilerId);
+                // The method commented below has its code inlined underneath to
+                // reduce the bias recorded for the profiler's calls in this
+                // time sensitive stepThread method.
+                //
+                // this.runtime.profiler.start(executeProfilerId, null);
+                this.runtime.profiler.records.push(
+                    this.runtime.profiler.START, executeProfilerId, null, 0);
             }
             if (thread.target === null) {
                 this.retireThread(thread);
             } else {
                 execute(this, thread);
+            }
+            if (this.runtime.profiler !== null) {
+                // this.runtime.profiler.stop();
+                this.runtime.profiler.records.push(this.runtime.profiler.STOP, 0);
             }
             thread.blockGlowInFrame = currentBlockId;
             // If the thread has yielded or is waiting, yield to other threads.
