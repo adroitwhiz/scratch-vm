@@ -312,7 +312,7 @@ class Thread {
     pushReportedValue (value) {
         const parentStackFrame = this.peekParentStackFrame();
         if (parentStackFrame !== null) {
-            parentStackFrame.justReported = typeof value === 'undefined' ? null : value;
+            parentStackFrame.justReported = value;
         }
     }
 
