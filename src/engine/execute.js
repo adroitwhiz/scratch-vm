@@ -203,43 +203,21 @@ const execute = function (sequencer, thread, recursiveCall) {
         blockCached._fieldKind = fieldKeys.length > 0 ? FieldKind.DYNAMIC : FieldKind.NONE;
         if (fieldKeys.length === 1 && fieldKeys.includes('VARIABLE')) {
             blockCached._fieldKind = FieldKind.VARIABLE;
-            blockCached._argValues = {
-                VARIABLE: {
-                    id: fields.VARIABLE.id,
-                    name: fields.VARIABLE.value
-                },
-                mutation: blockCached.mutation
+            blockCached._fieldVariable = {
+                id: fields.VARIABLE.id,
+                name: fields.VARIABLE.value
             };
         } else if (fieldKeys.length === 1 && fieldKeys.includes('LIST')) {
             blockCached._fieldKind = FieldKind.LIST;
-            blockCached._argValues = {
-                LIST: {
-                    id: fields.LIST.id,
-                    name: fields.LIST.value
-                },
-                mutation: blockCached.mutation
+            blockCached._fieldList = {
+                id: fields.LIST.id,
+                name: fields.LIST.value
             };
         } else if (fieldKeys.length === 1 && fieldKeys.includes('BROADCAST_OPTION')) {
             blockCached._fieldKind = FieldKind.BROADCAST_OPTION;
-            blockCached._argValues = {
-                BROADCAST_OPTION: {
-                    id: fields.BROADCAST_OPTION.id,
-                    name: fields.BROADCAST_OPTION.value
-                },
-                mutation: blockCached.mutation
-            };
-        } else if (fieldKeys.length > 0) {
-            // FieldKind.DYNAMIC
-            blockCached._argValues = {
-                mutation: blockCached.mutation
-            };
-            for (const fieldName in fields) {
-                blockCached._argValues[fieldName] = fields[fieldName].value;
-            }
-        } else {
-            // FieldKind.NONE
-            blockCached._argValues = {
-                mutation: blockCached.mutation
+            blockCached._fieldBroadcastOption = {
+                id: fields.BROADCAST_OPTION.id,
+                name: fields.BROADCAST_OPTION.value
             };
         }
 
@@ -252,7 +230,9 @@ const execute = function (sequencer, thread, recursiveCall) {
     }
 
     const opcode = blockCached.opcode;
+    const fields = blockCached._fields;
     const inputs = blockCached._inputs;
+    const mutation = blockCached.mutation;
     const blockFunction = blockCached._blockFunction;
     const isHat = blockCached._isHat;
 
@@ -282,10 +262,29 @@ const execute = function (sequencer, thread, recursiveCall) {
         return;
     }
 
-    // Update values for arguments (inputs).
-    let argValues = blockCached._argValues;
+    // Generate values for arguments (inputs).
+    const argValues = {};
 
-    // Fields are set during blockCached initialization.
+    // Add all fields on this block to the argValues. Some known fields may
+    // appear by themselves and can be set to argValues quicker by setting them
+    // explicitly.
+    if (blockCached._fieldKind !== FieldKind.NONE) {
+        switch (blockCached._fieldKind) {
+        case FieldKind.VARIABLE:
+            argValues.VARIABLE = blockCached._fieldVariable;
+            break;
+        case FieldKind.LIST:
+            argValues.LIST = blockCached._fieldList;
+            break;
+        case FieldKind.BROADCAST_OPTION:
+            argValues.BROADCAST_OPTION = blockCached._fieldBroadcastOption;
+            break;
+        default:
+            for (const fieldName in fields) {
+                argValues[fieldName] = fields[fieldName].value;
+            }
+        }
+    }
 
     // Recursively evaluate input blocks.
     for (const inputName in inputs) {
@@ -368,6 +367,9 @@ const execute = function (sequencer, thread, recursiveCall) {
             argValues[inputName] = inputValue;
         }
     }
+
+    // Add any mutation to args (e.g., for procedures).
+    argValues.mutation = mutation;
 
     let primitiveReportedValue = null;
     blockUtility.sequencer = sequencer;
