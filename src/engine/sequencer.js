@@ -209,7 +209,7 @@ class Sequencer {
                 //
                 // this.runtime.profiler.start(executeProfilerId, null);
                 this.runtime.profiler.records.push(
-                    this.runtime.profiler.START, executeProfilerId, null, 0);
+                    this.runtime.profiler.START, executeProfilerId, null, performance.now());
             }
             if (thread.target === null) {
                 this.retireThread(thread);
@@ -218,7 +218,7 @@ class Sequencer {
             }
             if (this.runtime.profiler !== null) {
                 // this.runtime.profiler.stop();
-                this.runtime.profiler.records.push(this.runtime.profiler.STOP, 0);
+                this.runtime.profiler.records.push(this.runtime.profiler.STOP, performance.now());
             }
             thread.blockGlowInFrame = currentBlockId;
             // If the thread has yielded or is waiting, yield to other threads.
