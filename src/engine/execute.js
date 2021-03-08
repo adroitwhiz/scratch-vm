@@ -235,7 +235,8 @@ const execute = function (sequencer, thread) {
                     name: cast.toString(inputValue)
                 };
             }
-        } else {
+        } else if (typeof inputValue !== 'undefined') {
+            // inputValue will be undefined if it's an empty boolean parameter in a custom block
             argValues[inputName] = inputValue;
         }
     }

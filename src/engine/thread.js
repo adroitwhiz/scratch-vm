@@ -126,7 +126,7 @@ class Thread {
                 warpMode: warpMode, // Whether this level is in warp mode.
                 reported: {}, // Collects reported input values.
                 waitingReporter: null, // Name of waiting reporter.
-                params: {}, // Procedure parameters.
+                params: null, // Procedure parameters.
                 executionContext: {} // A context passed to block implementations.
             });
         }
@@ -144,7 +144,7 @@ class Thread {
         // frame.warpMode = warpMode;   // warp mode stays the same when reusing the stack frame.
         frame.reported = {};
         frame.waitingReporter = null;
-        frame.params = {};
+        frame.params = null;
         frame.executionContext = {};
     }
 
@@ -244,6 +244,9 @@ class Thread {
     getParam (paramName) {
         for (let i = this.stackFrames.length - 1; i >= 0; i--) {
             const frame = this.stackFrames[i];
+            if (frame.params === null) {
+                continue;
+            }
             if (frame.params.hasOwnProperty(paramName)) {
                 return frame.params[paramName];
             }
