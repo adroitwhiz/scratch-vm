@@ -208,6 +208,10 @@ class Sequencer {
             }
             if (thread.target === null) {
                 this.retireThread(thread);
+            } else if (thread.resumed) {
+                // Skip execution the first step after returning from a promise. This avoids getting stuck executing the
+                // same promise block over and over.
+                thread.resumed = false;
             } else {
                 execute(this, thread);
             }

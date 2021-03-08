@@ -215,6 +215,12 @@ class Thread {
          * @type {Array.<*>}
          */
         this.reported = null;
+
+        /**
+         * Whether this thread has just resumed from a promise.
+         * @type {boolean}
+         */
+        this.resumed = false;
     }
 
     /**
